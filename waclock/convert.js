@@ -73,9 +73,10 @@ function getSunrise(loc){
 }
 
 function showWaclock(json){
+  var offset = 35 * 60;
   var sun = parseResponse(json);
-  var sunrise = sun.sunrise;
-  var sunset = sun.sunset;
+  var sunrise = sun.sunrise - offset;
+  var sunset = sun.sunset + offset;
   var daytime = new Date(sunset - sunrise);
   // 昼間の1目盛りの時間(分) = 昼間の時間(分) / 60(目盛り)
   var dayscale = (daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60
