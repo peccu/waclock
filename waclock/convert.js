@@ -73,28 +73,35 @@ function getSunrise(loc){
 }
 
 function showWaclock(json){
-  // var offset = 35 * 60;
+  // 日の出と日の入りの時刻を取り出す
   var sun = parseResponse(json);
-  // var sunrise = sun.sunrise - offset;
-  // var sunset = sun.sunset + offset;
+
+  // 日の出日の入りから35分ずらす(大人の科学の説明より)
+  var offset = 35;
+  sun.sunrise.setMinutes(sun.sunrise.getMinutes() - offset);
+  sun.sunset.setMinutes(sun.sunset.getMinutes() + offset);
   var sunrise = sun.sunrise;
   var sunset = sun.sunset;
+
+  // 昼間と夜間の時間を求める
   var daytime = new Date(sunset - sunrise);
-  // 昼間の1目盛りの時間(分) = 昼間の時間(分) / 60(目盛り)
-  var dayscale = (daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60
-  // 夜間の1目盛りの時間(分) = 昼間の時間(分) / 60(目盛り)
-  var nightscale = (24*60 - daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60;
   var now = new Date();
   // 昼用
-  var scale = dayscale;
+  // 昼間の1目盛りの時間(分) = 昼間の時間(分) / 60(目盛り)
+  var dayscale = (daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60
+  var scale = dayscale; // 1目盛りの時間
   var diff = new Date(now - sunrise);
-  var etoOffset = 3;
+  var etoOffset = 3; // 卯
   if(now >= sunset){
     // 夜用
-    scale = nightscale;
+    // 夜間の1目盛りの時間(分) = 昼間の時間(分) / 60(目盛り)
+    var nightscale = (24*60 - daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60;
+    scale = nightscale; // 1目盛りの時間
     diff = new Date(now - sunset);
-    etoOffset = 9;
+    etoOffset = 9; // 酉
   }
+
+  // 今何目盛り目か求める
   var scales = (diff.getUTCHours()*60 + diff.getUTCMinutes()) / scale;
   var idx = (etoOffset + Math.floor(scales / 10)) % 12 ;
   var modulus = Math.round(scales % 10 * 10)/10;
@@ -102,6 +109,7 @@ function showWaclock(json){
   $("#wa").html(eto[idx] + "の刻の" + modulus + "目盛り目");
   $("#scale").html(Math.round(scale*10)/10 + "分");
 }
+
 
 function parseResponse(json){
   var civil = $(json.result.event).filter(function(i,e){
