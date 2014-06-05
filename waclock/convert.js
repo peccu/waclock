@@ -75,6 +75,8 @@ function getSunrise(loc){
 function showWaclock(json){
   // 日の出と日の入りの時刻を取り出す
   var sun = parseResponse(json);
+  $("#sunrise").html(sun.sunrise.getHours() + "時" + sun.sunrise.getMinutes() + "分");
+  $("#sunset").html(sun.sunset.getHours() + "時" + sun.sunset.getMinutes() + "分");
 
   // 日の出日の入りから35分ずらす(大人の科学の説明より)
   var offset = 35;
@@ -82,29 +84,47 @@ function showWaclock(json){
   sun.sunset.setMinutes(sun.sunset.getMinutes() + offset);
   var sunrise = sun.sunrise;
   var sunset = sun.sunset;
+  $("#sunriseoff").html(sun.sunrise.getHours() + "時" + sun.sunrise.getMinutes() + "分");
+  $("#sunsetoff").html(sun.sunset.getHours() + "時" + sun.sunset.getMinutes() + "分");
 
   // 昼間と夜間の時間を求める
   var daytime = new Date(sunset - sunrise);
+  // 1目盛りの時間、干支番号
+  var scale, etoOffset;
+
   var now = new Date();
+
   // 昼用
   // 昼間の1目盛りの時間(分) = 昼間の時間(分) / 60(目盛り)
   var dayscale = (daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60
-  var scale = dayscale; // 1目盛りの時間
-  var diff = new Date(now - sunrise);
-  var etoOffset = 3; // 卯
+  var dayDiff = new Date(now - sunrise);
+  var dayEtoOffset = 3; // 卯
+  // 夜用
+  // 夜間の1目盛りの時間(分) = (24時間 - 昼間の時間(分)) / 60(目盛り)
+  var nightscale = (24*60 - daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60;
+  var nightDiff = new Date(now - sunset);
+  var nightEtoOffset = 9; // 酉
+
+
+  // 昼と夜で切り替える
   if(now >= sunset){
-    // 夜用
-    // 夜間の1目盛りの時間(分) = 昼間の時間(分) / 60(目盛り)
-    var nightscale = (24*60 - daytime.getUTCHours()*60 + daytime.getUTCMinutes()) / 60;
-    scale = nightscale; // 1目盛りの時間
-    diff = new Date(now - sunset);
-    etoOffset = 9; // 酉
+    scale = nightscale;
+    diff = nightDiff;
+    etoOffset = nightEtoOffset;
+  }else{
+    scale = dayscale;
+    diff = dayDiff;
+    etoOffset = dayEtoOffset;
   }
 
   // 今何目盛り目か求める
-  var scales = (diff.getUTCHours()*60 + diff.getUTCMinutes()) / scale;
-  var idx = (etoOffset + Math.floor(scales / 10)) % 12 ;
+  // 卯または酉から何目盛り進んだかを表示するため、5戻す
+  // 昼と夜が切り替わるのは卯の5目盛り目、酉の5目盛り目のため
+  var scales = ((diff.getUTCHours()*60 + diff.getUTCMinutes()) / scale) + 5;
   var modulus = Math.round(scales % 10 * 10)/10;
+  // 干支名を取り出す
+  var idx = (etoOffset + Math.floor(scales / 10)) % 12 ;
+
   $("#time").html(now.getHours() + "時" + now.getMinutes() + "分");
   $("#wa").html(eto[idx] + "の刻の" + modulus + "目盛り目");
   $("#scale").html(Math.round(scale*10)/10 + "分");
