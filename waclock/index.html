@@ -6,16 +6,28 @@
     <script src="convert.js"></script>
     <link rel="stylesheet" type="text/css" href="waclock.css">
   </head>
-  <body>
+  <body style="text-align:center;">
     <h2>二挺天符和時計</h2>
-    <div>現在時刻：
-      <div id="time"></div>
-    </div>
-    <div>和時計：
-      <div id="wa"></div>
-    </div>
-    <div>1目盛りの時間：
-      <div id="scale"></div>
-    </div>
+    <h3><div class="value" id="wa"></div></h3>
+    <table>
+      <tr>
+        <td class="title">現在時刻</td><td>：</td><td><div class="value" id="time"></div></td>
+      </tr>
+      <tr>
+        <td class="title">日の出</td><td>：</td><td><div class="value" id="sunrise"></div></td>
+      </tr>
+      <tr>
+        <td class="title">明け六つ<br/>(日の出の35分前)</td><td>：</td><td><div class="value" id="sunriseoff"></div></td>
+      </tr>
+      <tr>
+        <td class="title">日の入り</td><td>：</td><td><div class="value" id="sunset"></div></td>
+      </tr>
+      <tr>
+        <td class="title">暮れ六つ<br/>(日の入りの35分後)</td><td>：</td><td><div class="value" id="sunsetoff"></div></td>
+      </tr>
+      <tr>
+        <td class="title">1目盛りの時間</td><td>：</td><td><div class="value" id="scale"></div></td>
+      </tr>
+    </table>
   </body>
 </html>
